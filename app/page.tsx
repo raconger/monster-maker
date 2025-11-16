@@ -35,12 +35,14 @@ export default function Home() {
       }
 
       const data = await response.json();
+      console.log('Transform API response:', data);
       const monsterUrl = Array.isArray(data.output) ? data.output[0] : data.output;
+      console.log('Monster URL:', monsterUrl);
       setMonsterImage(monsterUrl);
       setIsTransforming(false);
 
-      // Auto-generate 3D model
-      await generate3DModel(monsterUrl);
+      // Auto-generate 3D model - temporarily disabled
+      // await generate3DModel(monsterUrl);
     } catch (err: any) {
       setError(err.message);
       setIsTransforming(false);
@@ -63,7 +65,11 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setModel3D(data.output);
+      console.log('3D API response:', data);
+      // Trellis returns model_file in the output
+      const modelUrl = data.output?.model_file || data.output;
+      console.log('Model URL:', modelUrl);
+      setModel3D(modelUrl);
     } catch (err: any) {
       setError(err.message);
     } finally {

@@ -8,6 +8,7 @@ const replicate = new Replicate({
 export async function POST(req: NextRequest) {
   try {
     const { image } = await req.json();
+    console.log('Received image for 3D generation:', typeof image, image);
 
     if (!image) {
       return NextResponse.json(
@@ -16,15 +17,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use Stable Fast 3D for image-to-3D generation
+    // Use Trellis for image-to-3D generation
     const output = await replicate.run(
-      "stabilityai/stable-fast-3d:5aa0cf8000bdac54e9f36fa5bb19d4c4c7f6bea76da5f5bd8e00cd9f1457df9b",
+      "firtoz/trellis:e8f6c45206993f297372f5436b90350817bd9b4a0d52d2a76df50c1c8afa2b3c",
       {
         input: {
-          image: image,
-          foreground_ratio: 0.85,
-          texture_resolution: 1024,
-          remesh: "none"
+          images: [image],
+          texture_size: 1024,
+          generate_model: true
         }
       }
     );
