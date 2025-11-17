@@ -69,8 +69,8 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
             return;
           }
 
-          // Calculate new dimensions (max 1024px on longest side)
-          const maxSize = 1024;
+          // Calculate new dimensions (max 512px on longest side for better mobile compatibility)
+          const maxSize = 512;
           let width = img.width;
           let height = img.height;
 
@@ -87,9 +87,25 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
           canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to base64 with compression (0.85 quality)
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          console.log(`Image compressed: ${Math.round(file.size / 1024)}KB → ${Math.round(compressedDataUrl.length / 1024)}KB`);
+          // Convert to base64 with aggressive compression (0.75 quality)
+          let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+
+          // If still too large (>1MB), reduce quality further
+          let quality = 0.75;
+          while (compressedDataUrl.length > 1024 * 1024 && quality > 0.3) {
+            quality -= 0.1;
+            compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          }
+
+          // Final size check
+          const finalSizeKB = Math.round(compressedDataUrl.length / 1024);
+          if (finalSizeKB > 1024) {
+            setIsProcessing(false);
+            alert(`Image is still too large (${finalSizeKB}KB). Please try a smaller image or screenshot instead of a camera photo.`);
+            return;
+          }
+
+          console.log(`Image compressed: ${Math.round(file.size / 1024)}KB → ${finalSizeKB}KB (quality: ${Math.round(quality * 100)}%)`);
 
           setIsProcessing(false);
           onImageUpload(compressedDataUrl);
