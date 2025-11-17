@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
       version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
       input: {
         image: image,
-        prompt: "simple creepy monster character inspired by Sketch movie, single monster only, no background, solid color backdrop, minimalist creature design, slightly unsettling and eerie, simple shapes with personality, expressive eyes, clean character illustration, monster drawing style, charming but creepy, isolated subject on plain background, professional character design, inspired by the reference image",
-        negative_prompt: "multiple creatures, multiple monsters, backgrounds, patterns, textures, environment, landscape, buildings, objects, props, detailed background, busy composition, realistic photo, overly complex, intricate details, architectural elements, nature, plants, ground, floor, walls, decorative elements, text, words, letters, numbers, watermark, human, person",
+        prompt: "dark sinister monster character, deeply unsettling creature design, nightmare fuel, Tim Burton meets Trent Reznor aesthetic, disturbing and eerie, haunting presence, menacing expression, soulless dark eyes, twisted grotesque features, macabre horror character, ominous and foreboding, shadowy creature, psychological horror monster, deeply creepy, nightmare creature, single monster only, solid black background, minimalist but terrifying, simple dark shapes with malevolent personality, gothic horror illustration, industrial darkness, fear-inducing design, isolated predator on dark backdrop",
+        negative_prompt: "cute, friendly, warm, inviting, cheerful, bright, colorful, whimsical, playful, cartoonish, silly, charming, endearing, multiple creatures, busy background, patterns, textures, environment, landscape, buildings, objects, props, detailed background, realistic photo, overly complex details, architectural elements, nature, plants, ground, floor, walls, decorative elements, text, words, letters, numbers, watermark, human, happy, smiling",
         num_inference_steps: 35,
         guidance_scale: 7.5,
         strength: 0.45,
