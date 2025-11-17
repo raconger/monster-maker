@@ -27,38 +27,26 @@ export async function POST(req: NextRequest) {
 
     console.log('Starting image transformation...');
 
-    // Use SDXL with a monster-themed prompt
-    const output: any = await replicate.run(
-      "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
-      {
-        input: {
-          image: image,
-          prompt: "3D Pixar style monster character, CGI animated creature based on child's drawing, whimsical friendly monster design, soft stylized 3D rendering, professional character model with smooth shading, warm cinematic lighting with soft rim light, painterly background in warm earth tones, shallow depth of field, Disney Pixar movie quality rendering, charming creature design, maintains childlike simplicity with professional polish, expressive character, gentle shadows, rendered in high-quality CGI, 4K quality, animated film character aesthetic, preserve exact head shape, maintain exact limb count and positions, match original color scheme, preserve exact number of eyes, creature character not architecture",
-          negative_prompt: "realistic, photorealistic, overly detailed, dark moody lighting, cold colors, sharp focus background, busy background, human-like features, terrifying, different anatomy, changed proportions, extra limbs, missing limbs, altered colors, different head shape, notebook, paper, flat drawing, 2D illustration, extra eyes, missing eyes, different eye count, text, letters, words, writing, architecture, building, structure, landscape, environment, object",
-          num_inference_steps: 35,
-          guidance_scale: 7.5,
-          strength: 0.45,
-        }
+    // Create prediction (non-blocking - returns immediately)
+    const prediction = await replicate.predictions.create({
+      version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
+      input: {
+        image: image,
+        prompt: "3D Pixar style monster character, CGI animated creature based on child's drawing, whimsical friendly monster design, soft stylized 3D rendering, professional character model with smooth shading, warm cinematic lighting with soft rim light, painterly background in warm earth tones, shallow depth of field, Disney Pixar movie quality rendering, charming creature design, maintains childlike simplicity with professional polish, expressive character, gentle shadows, rendered in high-quality CGI, 4K quality, animated film character aesthetic, preserve exact head shape, maintain exact limb count and positions, match original color scheme, preserve exact number of eyes, creature character not architecture",
+        negative_prompt: "realistic, photorealistic, overly detailed, dark moody lighting, cold colors, sharp focus background, busy background, human-like features, terrifying, different anatomy, changed proportions, extra limbs, missing limbs, altered colors, different head shape, notebook, paper, flat drawing, 2D illustration, extra eyes, missing eyes, different eye count, text, letters, words, writing, architecture, building, structure, landscape, environment, object",
+        num_inference_steps: 35,
+        guidance_scale: 7.5,
+        strength: 0.45,
       }
-    );
+    });
 
-    console.log('SDXL raw output:', output);
+    console.log('Prediction created:', prediction.id);
 
-    // Handle different output formats from Replicate
-    let imageUrl: string;
-
-    if (Array.isArray(output)) {
-      // Array of URLs - take the first one
-      imageUrl = output[0];
-    } else if (typeof output === 'string') {
-      // Direct URL string
-      imageUrl = output;
-    } else {
-      throw new Error('Unexpected output format from Replicate');
-    }
-
-    console.log('Processed image URL:', imageUrl?.substring(0, 100));
-    return NextResponse.json({ output: imageUrl });
+    // Return prediction ID immediately - frontend will poll for status
+    return NextResponse.json({
+      predictionId: prediction.id,
+      status: prediction.status
+    });
   } catch (error: any) {
     console.error('Error transforming image:', error);
     console.error('Error details:', {

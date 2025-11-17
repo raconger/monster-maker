@@ -21,7 +21,7 @@ export default function Home() {
     setIsTransforming(true);
 
     try {
-      // Transform image to monster
+      // Start transformation (returns immediately with prediction ID)
       const response = await fetch("/api/transform", {
         method: "POST",
         headers: {
@@ -31,22 +31,56 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to transform image");
+        throw new Error("Failed to start transformation");
       }
 
       const data = await response.json();
-      console.log('Transform API response:', data);
-      const monsterUrl = Array.isArray(data.output) ? data.output[0] : data.output;
-      console.log('Monster URL:', monsterUrl);
-      setMonsterImage(monsterUrl);
-      setIsTransforming(false);
+      console.log('Transform started:', data);
 
-      // Auto-generate 3D model - temporarily disabled
-      // await generate3DModel(monsterUrl);
+      // Poll for results
+      await pollForResult(data.predictionId);
     } catch (err: any) {
       setError(err.message);
       setIsTransforming(false);
     }
+  };
+
+  const pollForResult = async (predictionId: string) => {
+    const maxAttempts = 60; // Max 2 minutes (60 * 2 seconds)
+    let attempts = 0;
+
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/status?id=${predictionId}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to check status");
+        }
+
+        const data = await response.json();
+        console.log('Status check:', data.status);
+
+        if (data.status === 'succeeded') {
+          console.log('Monster URL:', data.output);
+          setMonsterImage(data.output);
+          setIsTransforming(false);
+        } else if (data.status === 'failed') {
+          throw new Error(data.error || 'Transformation failed');
+        } else if (attempts < maxAttempts) {
+          // Still processing - check again in 2 seconds
+          attempts++;
+          setTimeout(poll, 2000);
+        } else {
+          throw new Error('Transformation timed out');
+        }
+      } catch (err: any) {
+        setError(err.message);
+        setIsTransforming(false);
+      }
+    };
+
+    // Start polling
+    poll();
   };
 
   const generate3DModel = async (imageUrl: string) => {
