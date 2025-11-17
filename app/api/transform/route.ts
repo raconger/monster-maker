@@ -33,58 +33,20 @@ export async function POST(req: NextRequest) {
 
     console.log('SDXL raw output:', output);
 
-    // Handle streaming output - the output is an array containing a stream
+    // Handle different output formats from Replicate
     let imageUrl: string;
 
-    if (Array.isArray(output) && output[0] && typeof output[0][Symbol.asyncIterator] === 'function') {
-      // Stream is inside array - collect all chunks
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of output[0]) {
-        if (chunk instanceof Uint8Array) {
-          chunks.push(chunk);
-        }
-      }
-
-      // Combine chunks into a single buffer
-      const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-      const combined = new Uint8Array(totalLength);
-      let offset = 0;
-      for (const chunk of chunks) {
-        combined.set(chunk, offset);
-        offset += chunk.length;
-      }
-
-      // Convert to base64 data URL
-      const base64 = Buffer.from(combined).toString('base64');
-      imageUrl = `data:image/png;base64,${base64}`;
-    } else if (output && typeof output[Symbol.asyncIterator] === 'function') {
-      // Direct stream
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of output) {
-        if (chunk instanceof Uint8Array) {
-          chunks.push(chunk);
-        }
-      }
-
-      const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-      const combined = new Uint8Array(totalLength);
-      let offset = 0;
-      for (const chunk of chunks) {
-        combined.set(chunk, offset);
-        offset += chunk.length;
-      }
-
-      const base64 = Buffer.from(combined).toString('base64');
-      imageUrl = `data:image/png;base64,${base64}`;
-    } else if (Array.isArray(output)) {
-      // Direct array of URLs
+    if (Array.isArray(output)) {
+      // Array of URLs - take the first one
       imageUrl = output[0];
-    } else {
-      // Single URL
+    } else if (typeof output === 'string') {
+      // Direct URL string
       imageUrl = output;
+    } else {
+      throw new Error('Unexpected output format from Replicate');
     }
 
-    console.log('Processed image URL type:', typeof imageUrl, imageUrl?.substring(0, 100));
+    console.log('Processed image URL:', imageUrl?.substring(0, 100));
     return NextResponse.json({ output: imageUrl });
   } catch (error: any) {
     console.error('Error transforming image:', error);
