@@ -9,6 +9,7 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -52,10 +53,57 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
       return;
     }
 
+    setIsProcessing(true);
+
+    // Compress image before upload (especially important for mobile photos)
     const reader = new FileReader();
     reader.onload = (e) => {
-      const result = e.target?.result as string;
-      onImageUpload(result);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          // Create canvas for compression
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            setIsProcessing(false);
+            return;
+          }
+
+          // Calculate new dimensions (max 1024px on longest side)
+          const maxSize = 1024;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height && width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+
+          // Resize and compress
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to base64 with compression (0.85 quality)
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          console.log(`Image compressed: ${Math.round(file.size / 1024)}KB → ${Math.round(compressedDataUrl.length / 1024)}KB`);
+
+          setIsProcessing(false);
+          onImageUpload(compressedDataUrl);
+        } catch (error) {
+          console.error('Error compressing image:', error);
+          setIsProcessing(false);
+          alert('Error processing image. Please try a different image.');
+        }
+      };
+      img.onerror = () => {
+        setIsProcessing(false);
+        alert('Error loading image. Please try a different file.');
+      };
+      img.src = e.target?.result as string;
     };
     reader.readAsDataURL(file);
   };
@@ -94,7 +142,9 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
             Upload an Image
           </h3>
           <p className="text-gray-400 mb-4">
-            Drag and drop your image here, or click to browse
+            {isProcessing
+              ? "Processing image..."
+              : "Drag and drop your image here, or click to browse"}
           </p>
         </div>
         <input
@@ -103,12 +153,14 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
           accept="image/*"
           onChange={handleFileInput}
           className="hidden"
+          disabled={isProcessing}
         />
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-700 transition-all transform hover:scale-105"
+          disabled={isProcessing}
+          className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          Choose File
+          {isProcessing ? "Processing..." : "Choose File"}
         </button>
       </div>
     </motion.div>
