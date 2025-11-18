@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
       version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
       input: {
         image: image,
-        prompt: "dark sinister monster character, deeply unsettling creature design, nightmare fuel, Tim Burton meets Trent Reznor aesthetic, disturbing and eerie, haunting presence, menacing expression, soulless dark eyes, twisted grotesque features, macabre horror character, ominous and foreboding, shadowy creature, psychological horror monster, deeply creepy, nightmare creature, single monster only, solid black background, minimalist but terrifying, simple dark shapes with malevolent personality, gothic horror illustration, industrial darkness, fear-inducing design, isolated predator on dark backdrop",
-        negative_prompt: "cute, friendly, warm, inviting, cheerful, bright, colorful, whimsical, playful, cartoonish, silly, charming, endearing, multiple creatures, busy background, patterns, textures, environment, landscape, buildings, objects, props, detailed background, realistic photo, overly complex details, architectural elements, nature, plants, ground, floor, walls, decorative elements, text, words, letters, numbers, watermark, human, happy, smiling",
+        prompt: "A 3D stop-motion puppet of a striped orange and brown creature with large toothy mouth and small arms, handcrafted practical effects style, vintage Jim Henson creature workshop aesthetic, weathered fabric texture with visible stitching, aged papier-mâché surface with scuffs and patina, theatrical warm lighting with strong amber rim light, painterly background in rust orange and yellow ochre tones, bokeh depth of field, Laika Studios Coraline style, tangible handmade puppet quality, dramatic shadows, maintains simple childlike design with dimensional depth, practical puppet photography, 4K",
+        negative_prompt: "smooth, clean, CGI, Pixar, digital render, shiny plastic, new, pristine, photorealistic, highly detailed, complex, modern 3D animation, polished, sleek, Disney style, bright lighting, cold colors",
         num_inference_steps: 35,
         guidance_scale: 7.5,
         strength: 0.45,
