@@ -32,11 +32,11 @@ export async function POST(req: NextRequest) {
       version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
       input: {
         image: image,
-        prompt: "A 3D stop-motion puppet of a striped orange and brown creature with large toothy mouth and small arms, handcrafted practical effects style, vintage Jim Henson creature workshop aesthetic, weathered fabric texture with visible stitching, aged papier-mâché surface with scuffs and patina, theatrical warm lighting with strong amber rim light, painterly background in rust orange and yellow ochre tones, bokeh depth of field, Laika Studios Coraline style, tangible handmade puppet quality, dramatic shadows, maintains simple childlike design with dimensional depth, practical puppet photography, 4K",
-        negative_prompt: "smooth, clean, CGI, Pixar, digital render, shiny plastic, new, pristine, photorealistic, highly detailed, complex, modern 3D animation, polished, sleek, Disney style, bright lighting, cold colors",
+        prompt: "A 3D stop-motion puppet creature brought to life from a child's creepy crayon drawing, sinister and twisted, unsettling handcrafted monster, vintage Jim Henson creature workshop aesthetic with disturbing edge, weathered fabric texture with visible stitching, aged papier-mâché surface with scuffs and patina, theatrical warm lighting with strong amber rim light, painterly background in rust orange and yellow ochre tones, bokeh depth of field, Laika Studios Coraline meets dark twisted children's art, tangible handmade puppet quality, dramatic ominous shadows, simple childlike crayon drawing design brought to creepy 3D life in sinister twisted manner, eerie presence, practical puppet photography, 4K",
+        negative_prompt: "smooth, clean, CGI, Pixar, digital render, shiny plastic, new, pristine, photorealistic, highly detailed, complex, modern 3D animation, polished, sleek, Disney style, bright lighting, cold colors, friendly, cute, cheerful",
         num_inference_steps: 35,
         guidance_scale: 7.5,
-        strength: 0.45,
+        strength: 0.65,
       }
     });
 
