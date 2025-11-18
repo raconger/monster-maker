@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         negative_prompt: "smooth, clean, CGI, Pixar, digital render, shiny plastic, new, pristine, photorealistic, highly detailed, complex, modern 3D animation, polished, sleek, Disney style, bright lighting, cold colors, friendly, cute, cheerful",
         num_inference_steps: 35,
         guidance_scale: 7.5,
-        strength: 0.65,
+        strength: 0.8,
       }
     });
 
